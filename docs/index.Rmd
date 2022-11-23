@@ -1,6 +1,6 @@
 ---
-title: "Your A4 Report Title (TODO: Revise title)"
-author: "Your Name"
+title: "The stereotype of black people"
+author: "Miles Zhang"
 date: '2022-11-01'
 output: html_document
 ---
@@ -11,35 +11,38 @@ source("../source/analysis.R")
 ```
 
 ## Abstract 
-[TODO: Include a short abstract (about 50 words)]
+This report tells people why they will produce an extreme stereotype of black people. Between 1970 and 2018 in America, the growth rate of black people in jail are higher than white people, though some counties did not have any record of black people in jail. The surging increase in the number of black people causes more and more people who see this report and data set to produce a wrong judgment and stereotype of black people.
 
-# Test (TODO: Remove before submission!!)
-```{r echo=FALSE}
-q1_string <- test_query1()
-num <- 5
-```
-As you know, this is a markdown report. The [R Markdown Cheatsheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf) is **useful!**
-
-* Here's a test of a dynamic variable. Say **"`r q1_string`!!!** 
-* Here's another test. A vector
-of numbers: `r test_query2(num)`.
-
-Recall that _{r echo=TRUE}_ can be used to display the code, 
-which is very useful when developing and debugging a report. Here's an example: 
-
-```{r echo=TRUE}
-num <- 5
-sum <- sum(test_query2(num))
-print(sum)
-```
 
 ## Introduction 
-[TODO]
+Different populations of white people and black people in jail reflect a huge unequal social issue in society. One research by the vera institute shows "Black people are twice as likely to be arrested as white people". It is an unfair fact that more black people are arrested and in jail. When other people see the report of the population in the jail, they will have prejudice about black people and think black people will do more crimes than white people. The direct stakeholders are the black people, which causes them to have a bad stereotype. The indirect stakeholders are the other races in America who will have the wrong judgment of black people since the data set shows the increasing growth rate of black people in jail, and so on. There are some pieces of evidence that can answer why people have a stereotype of black people do more crime than others. 
 
 ## Data Summary 
-[TODO]
+After calculation, there are four values, the average total jail population rate from 1970 to 2018, the average number of total jail population rate, jail back people rate, and jail white people rate in 2018 which is the most recent year.   The average rate of the total jail population shows that crimes increased by approximately 497 each year from 1970 to 2018. Although, it did not have every race in every county in the first several years of the 1970s. So, it is most convinced that to see the average summarized number in the most recent year. In 2018, the rate of the black jail population was the most about 2,519, which is bigger than the average rate of the total jail population, and the white jail population (about 610 and 498) increased in the recent year. It gets that the average rate of different groups of people makes the stereotype of black deeper.
 
-[TODO ... other sections ... See Canvas for details]
+```{r echo = FALSE, message = FALSE}
+source("../source/analysis.R")
+plot(plot_jail_pop_for_us())
+```
+> This bar chart shows the total jail population increases by year from 1970 to 2018, in the U.S. Almost all bars are positive, they means the total jail population almost increase every year which any decreases on the total population. The quesion is Does this chart has any similarities or rules when year increased? It will have the highest bar on the most recent years.
+
+```{r echo = FALSE, message = FALSE}
+source("../source/analysis.R")
+plot(plot_jail_pop_by_states(c("WA", "OR", "CA")))
+```
+> This line chart shows the total jail population on sepecific states in the U.S. each year.The population and economic situation will affect the state's total jail population. The question is What common specials make on some states have the same situation. The western states will have more jail population than the estern states. The differences on geography can make different scales or ranges of jail population on these common state.
+
+```{r echo = FALSE, message = FALSE}
+source("../source/analysis.R")
+plot(plot_prop_black_jail_pop_vs_county_pop())
+```
+> This histogram shows the correction between black jail rate and their counties population. The histogram makes people know if a county population has a larger population, it will has more black get in jail. it is a positive relationship. The question is that is black population increasing when a county has more population? This histogram cannot show a strong relationship about this quesion. Whatever, the rate of black jail population is increasing, because a large part of black people crime when they are in a larger county.
+
+```{r echo = FALSE, message = FALSE}
+source("../source/analysis.R")
+plot(get_prop_black_jail_pop_la())
+```
+> this map shows the proportion of jail black people with each total population in LA. I am failed to make a map by myself. So it only can see the rate of jail black people has a relationship the total population in LA.
 
 _All the very best with your work!_
 
