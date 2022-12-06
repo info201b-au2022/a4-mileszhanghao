@@ -67,10 +67,10 @@ avg_rate_white_jail_pop <- incarceration %>%
 #----------------------------------------------------------------------------#
 # This function only shows the total jail population per year (1970 to 2018)
 get_year_jail_pop <- function() {
-  total_jail_pop_years <- incarceration %>%
+  jail_pop_years <- incarceration %>%
     group_by(year) %>%
     summarize(total_jail_pop_years = sum(total_jail_pop, na.rm = T)) 
-return(total_jail_pop_years)   
+return(jail_pop_years)   
 }
 
 # This function plots a chart of total jail population increases by year (1970 to 2018) in the America
@@ -136,10 +136,13 @@ plot_jail_pop_by_states <- function(states) {
 
 # This function selects the black jail rate and the total population on 2018
 get_prop_black_jail_pop_vs_county_pop <- function() {
-  prop_black_jail_pop_vs_county_pop <- incarceration %>%
+  prop_black_jail_pop_vs_county_pop <- df %>%
     filter(year == max(year)) %>%
-    select(black_jail_pop_rate, total_pop) %>%
-    drop_na() %>%
+    mutate(prop_black_jail_pop = black_jail_pop / total_jail_pop) %>%
+    filter(prop_black_jail_pop <= 1.0) %>%
+    filter(total_pop < 500000) %>%
+    select(total_pop, prop_black_jail_pop)
+  
   return(prop_black_jail_pop_vs_county_pop)
 }
 
@@ -150,16 +153,17 @@ plot_prop_black_jail_pop_vs_county_pop <- function() {
   legend_x <- "County Population"
   legend_y <- "Proportion of Black Jail Population"
   
-  plot <- get_prop_black_jail_pop_vs_county_pop %>%
+  plot <- get_prop_black_jail_pop_vs_county_pop() %>%
     ggplot() +
-    geom_bar(mapping = aes(x = total_pop, y = black_jail_pop_rate), stat="identity", fill="red", width = 1, alpha=0.7) +
-    geom_smooth(mapping = aes(x = total_pop, y = black_jail_pop_rate)) +
+    geom_point(mapping = aes(x = total_pop, y = prop_black_jail_pop)) +
+    scale_x_continuous(labels = scales::comma) +
     labs(
       x = legend_x,
       y = legend_y,
       title = title,
       caption = caption
     )
+  
   return(plot)
 }
 ## Section 6  ---- 
@@ -171,10 +175,18 @@ plot_prop_black_jail_pop_vs_county_pop <- function() {
 
 # This function selects black people jail rate in LA
 get_prop_black_jail_pop_la <- function() {
-  prop_la <- incarceration %>%
-    filter(year == max(year), state == "LA") %>%
+  counties <- map_data("county") %>%
+    mutate(polyname = paste0(region, ",", subregion)) %>%
+    select(long, lat, polyname)
+  
+  prop_la <- df %>%
+    filter(year == max(year), state == "WA") %>%
     mutate(prop_la = black_jail_pop / total_jail_pop) %>%
-    select(prop_la)
+    filter(prop_la <= 1.0) %>%
+    left_join(county.fips, by = "fips") %>%
+    left_join(counties, by = "polyname") %>%
+    select(county_name, long, lat, prop_la)
+  
   return(prop_la)
 }
 
@@ -188,7 +200,7 @@ plot_map_la <- function() {
   plot <- get_prop_black_jail_pop_la() %>%
     ggplot() +
     geom_polygon(
-      mapping = aes(x = total_jail_pop, y = black_jail_pop, fill = prop_la),
+      mapping = aes(x = long, y = lat, group = county_name, fill = prop_la),
       color = "brown",
       linewidth = .5
     ) +
