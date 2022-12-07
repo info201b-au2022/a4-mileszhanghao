@@ -24,25 +24,25 @@ After calculation, there are four values, the average total jail population rate
 source("../source/analysis.R")
 plot(plot_jail_pop_for_us())
 ```
-This bar chart shows the total jail population increases by year from 1970 to 2018, in the U.S. Almost all bars are positive, they means the total jail population almost increase every year which any decreases on the total population. The quesion is Does this chart has any similarities or rules when year increased? It will have the highest bar on the most recent years.
+This bar chart shows the total jail population increases by year from 1970 to 2018, in the U.S. Almost all bars are positive, they means the total jail population almost increase every year which any decreases on the total population. The question is Does this chart has any similarities or rules when year increased? It will have the highest bar on the most recent years.
 
 ```{r echo = FALSE, message = FALSE}
 source("../source/analysis.R")
 plot(plot_jail_pop_by_states(c("WA", "OR", "CA")))
 ```
-This line chart shows the total jail population on sepecific states in the U.S. each year.The population and economic situation will affect the state's total jail population. The question is What common specials make on some states have the same situation. The western states will have more jail population than the estern states. The differences on geography can make different scales or ranges of jail population on these common state.
+This line chart shows the total jail population on specific states in the U.S. each year.The population and economic situation will affect the state's total jail population. The question is What common specials make on some states have the same situation. The western states will have more jail population than the eastern states. The differences on geography can make different scales or ranges of jail population on these common state.
 
 ```{r echo = FALSE, message = FALSE}
 source("../source/analysis.R")
-plot(plot_prop_black_jail_pop_vs_county_pop())
+print(plot_black_pop_in_jail())
 ```
-This histogram shows the correction between black jail rate and their counties population. The histogram makes people know if a county population has a larger population, it will has more black get in jail. it is a positive relationship. The question is that is black population increasing when a county has more population? This histogram cannot show a strong relationship about this quesion. Whatever, the rate of black jail population is increasing, because a large part of black people crime when they are in a larger county.
+This histogram shows the correction between total black jail population and year. The histogram makes people know if a county population has a larger population, it will has more black get in jail. it is a positive relationship. The question is that is why the total black jail population will increase by years? This histogram cannot show a strong relationship about this question. Whatever, the total black jail population is increasing, because a large part of black people crime when they are in a larger county as the year increases.
 
 ```{r echo = FALSE, message = FALSE}
 source("../source/analysis.R")
-plot(get_prop_black_jail_pop_la())
+print(jail_map_black)
 ```
-this map shows the proportion of jail black people with each total population in LA. I am failed to make a map by myself. So it only can see the rate of jail black people has a relationship the total population in LA.
+this map shows the proportion of jail black people with each total population in America. we can see some counties will have a higher population of the jail black people. most counties are have the close black jail population. The question is that why black jail people will have the same situation? I believe that the major reason is that the serious stereotype in the America. So, if we want to change this situation in the U.S. we need to change our stereotype firstly. 
 
 _All the very best with your work!_
 

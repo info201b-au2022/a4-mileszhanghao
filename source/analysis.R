@@ -2,7 +2,6 @@ library(tidyverse)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-library(maps)
 
 # The functions might be useful for A4
 source("../source/a4-helpers.R")
@@ -134,37 +133,22 @@ plot_jail_pop_by_states <- function(states) {
 # See Canvas
 #----------------------------------------------------------------------------#
 
-# This function selects the black jail rate and the total population on 2018
-get_prop_black_jail_pop_vs_county_pop <- function() {
-  prop_black_jail_pop_vs_county_pop <- df %>%
-    filter(year == max(year)) %>%
-    mutate(prop_black_jail_pop = black_jail_pop / total_jail_pop) %>%
-    filter(prop_black_jail_pop <= 1.0) %>%
-    filter(total_pop < 500000) %>%
-    select(total_pop, prop_black_jail_pop)
-  
-  return(prop_black_jail_pop_vs_county_pop)
+# This function selects the black jail rate and the total population
+black_pop_in_jail <- function() {
+  incarceration %>%
+    select(year, black_jail_pop) %>%
+    drop_na() %>%
+    return(year, black_jail_pop)
 }
 
 # This function plots the chart of the correction of black jail population and their counties' total population
-plot_prop_black_jail_pop_vs_county_pop <- function() {
-  title <- "Black Jail Population Versus County Population"
-  caption <- "The data comes from Incarceration Trends Dataset by Vera Institute of Justice"
-  legend_x <- "County Population"
-  legend_y <- "Proportion of Black Jail Population"
-  
-  plot <- get_prop_black_jail_pop_vs_county_pop() %>%
-    ggplot() +
-    geom_point(mapping = aes(x = total_pop, y = prop_black_jail_pop)) +
-    scale_x_continuous(labels = scales::comma) +
-    labs(
-      x = legend_x,
-      y = legend_y,
-      title = title,
-      caption = caption
-    )
-  
-  return(plot)
+plot_black_pop_in_jail <- function() {
+  black_plot <- ggplot(data = black_pop_in_jail(), aes(x = year, y = black_jail_pop, fill = year)) +
+    geom_bar(stat = "identity") +
+    xlab("Year") +
+    ylab("Total Jail Population") +
+    ggtitle("Black Jail Population")
+  return(black_plot)
 }
 ## Section 6  ---- 
 #----------------------------------------------------------------------------#
@@ -173,49 +157,46 @@ plot_prop_black_jail_pop_vs_county_pop <- function() {
 # See Canvas
 #----------------------------------------------------------------------------#
 
-# This function selects black people jail rate in LA
-get_prop_black_jail_pop_la <- function() {
-  counties <- map_data("county") %>%
-    mutate(polyname = paste0(region, ",", subregion)) %>%
-    select(long, lat, polyname)
-  
-  prop_la <- df %>%
-    filter(year == max(year), state == "WA") %>%
-    mutate(prop_la = black_jail_pop / total_jail_pop) %>%
-    filter(prop_la <= 1.0) %>%
-    left_join(county.fips, by = "fips") %>%
-    left_join(counties, by = "polyname") %>%
-    select(county_name, long, lat, prop_la)
-  
-  return(prop_la)
-}
+# Step 1: libraries
+library(maps)
 
-# This function plots the proportion of black people jail population in LA
-plot_map_la <- function() {
-  title <- "Black People Jail Population rate in LA on 2018"
-  caption <- "The data comes from Incarceration Trends Dataset by Vera Institute of Justice"
-  legend_x <- "total jail population"
-  legend_y <- "black jail population"
-  
-  plot <- get_prop_black_jail_pop_la() %>%
-    ggplot() +
-    geom_polygon(
-      mapping = aes(x = long, y = lat, group = county_name, fill = prop_la),
-      color = "brown",
-      linewidth = .5
-    ) +
-    coord_map() +
-    scale_fill_continuous(low = "green", high = "yellow") +
-    labs(
-      fill = "Proportion of Black People Jail Population",
-      title = title,
-      caption = caption,
-      x = legend_x,
-      y = legend_y,
-    ) +
-    theme_minimal()
-  return(plot)
-}
+# Step 2: Get most recent assignment_data year from dataset
+recent_pop <- incarceration %>%
+  select(year, fips, state,county_name, black_jail_pop) %>%
+  filter(year == max(year))
+
+# Step 3: Use map_data function to join the 'assignment_data' dataset with the map_data for county
+data_shape <- map_data("county") %>%
+  unite(polyname, region, subregion, sep = ",") %>%
+  left_join(county.fips, by = "polyname")
+
+# Step 4: Merge map data and filtered jail data together
+map_data <- data_shape %>%
+  left_join(recent_pop, by = "fips")
+
+# Step 5: Incorporate blank theme
+blank_theme <- theme_bw() +
+  theme(
+    axis.line = element_blank(), # remove axis lines
+    axis.text = element_blank(), # remove axis labels
+    axis.ticks = element_blank(), # remove axis ticks
+    axis.title = element_blank(), # remove axis titles
+    plot.background =  element_blank(), # remove gray background
+    panel.grid.major = element_blank(), # remove major grid lines
+    panel.grid.minor = element_blank(), # remove minor grid lines
+    panel.border = element_blank(), # remove border around plot
+  )
+
+# Step 6: Create the map
+jail_map_black <- ggplot(map_data) +
+  geom_polygon(
+    mapping = aes(x = long, y = lat, group = group, fill = black_jail_pop),
+    color = "gray", size = 0.3
+  ) +
+  coord_map() + 
+  scale_fill_continuous(limits = c(0, max(map_data$black_jail_pop)), na.value = "white", low = "yellow", high = "red") +
+  blank_theme +
+  ggtitle("Black Jailing Population")
 ## Load data frame ---- 
 
 
